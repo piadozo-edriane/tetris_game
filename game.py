@@ -1,5 +1,7 @@
-import pygame
+
+from random import choice
 from settings_game import*
+from timers import Timer
 
 class Game:
     def __init__(self):
@@ -10,9 +12,26 @@ class Game:
 
         #line for copy
         self.line_surface = self.surface.copy()
-
+        self.line_surface.fill ((0,255,0))
+        self.line_surface.set_colorkey((0,255,0))
+        self.line_surface.set_alpha(120)
         #tetromino
-        self.tetromino = Tetromino("T", self.sprites)
+        #import a choice into a random module and create the dictionary tetrominos into list and iterate the keys
+        self.tetromino = Tetromino(choice(list(tetrominos.keys())), self.sprites)
+
+        #timer
+        self.timers = {
+            "vertical move": Timer(update_start_speed, True, self.move_down)
+        }
+        self.timers ["vertical move"].activate()
+
+    def timer_update (self):
+        for timer in self.timers.values():
+            timer.update()
+
+    def move_down (self):
+        self.tetromino.move_down()
+
     def draw_grid (self):
         #grid line for height
         for col in range (1, columns):
@@ -25,6 +44,9 @@ class Game:
         self.line_surface.blit(self.line_surface, (0, 0))
 
     def run (self):
+        #update 
+        self.timer_update()
+        self.sprites.update()
         #blit stand for block image like layering
         self.draw_grid()
         self.sprites.draw(self.surface)
@@ -37,10 +59,15 @@ class Block (pygame.sprite.Sprite): # sprite function means
         self.image.fill (color)
   
         #position
-        self.pos = pygame.Vector2(pos) + pygame.Vector2(3, 5)
+        self.pos = pygame.Vector2(pos) + block_offset
         x = self.pos.x * cell_size
         y = self.pos.y * cell_size
         self.rect = self.image.get_rect(topleft = (x, y))
+    def update (self):
+        self.rect = self.image.get_rect(topleft = self.pos * cell_size)
+    
+    def update (self):
+        self.rect = self.image.get_rect(topleft = self.pos * cell_size)
 
 class Tetromino:
     def __init__(self, shape, group):
@@ -48,3 +75,6 @@ class Tetromino:
         self.color = tetrominos[shape]["color"]
 
         self.blocks = [Block(group, pos, self.color) for pos in self.block_positions]
+    def move_down(self):
+        for block in self.blocks:
+            block.pos.y += 1
