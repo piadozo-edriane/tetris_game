@@ -1,4 +1,3 @@
-
 from random import choice
 from settings_game import*
 from timers import Timer
@@ -63,11 +62,10 @@ class Block (pygame.sprite.Sprite): # sprite function means
         x = self.pos.x * cell_size
         y = self.pos.y * cell_size
         self.rect = self.image.get_rect(topleft = (x, y))
-    def update (self):
-        self.rect = self.image.get_rect(topleft = self.pos * cell_size)
-    
-    def update (self):
-        self.rect = self.image.get_rect(topleft = self.pos * cell_size)
+    def update(self):
+        x = self.pos.x * cell_size
+        y = self.pos.y * cell_size
+        self.rect = self.image.get_rect(topleft = (x, y))
 
 class Tetromino:
     def __init__(self, shape, group):
